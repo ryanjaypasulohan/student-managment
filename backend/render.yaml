@@ -1,19 +1,18 @@
 services:
   - type: web
-    name: laravel-api
+    name: laravel-backend
     env: docker
-    dockerfilePath: ./Dockerfile
     plan: free
-    buildCommand: ""
-    startCommand: ""
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     envVars:
       - key: APP_ENV
         value: production
-      - key: APP_KEY
-        value: base64:base64:ew9yNhf5sBMc3UDmKwwDdCRuwbk8E+XU67NDUlT4od0=
-      - key: DB_CONNECTION
-        value: sqlite
-      - key: DB_DATABASE
-        value: /tmp/database.sqlite
+      - key: APP_DEBUG
+        value: false
+      - key: CACHE_DRIVER
+        value: file
       - key: SESSION_DRIVER
         value: file
+      - key: QUEUE_CONNECTION
+        value: sync
