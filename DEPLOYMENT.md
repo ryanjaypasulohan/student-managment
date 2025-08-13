@@ -72,6 +72,7 @@ php artisan serve
 ```bash
 cd frontend
 npm install
+cp .env.example .env
 npm run dev
 ```
 
@@ -79,13 +80,20 @@ npm run dev
 
 ### Common Issues
 
-1. **CORS Errors**: Make sure the frontend URL is added to the CORS allowed origins in `backend/config/cors.php`
+1. **Composer.lock Error**: If you get "composer.lock: not found" error:
+   - The project uses `Dockerfile.simple` which doesn't rely on composer.lock
+   - This avoids PHP version conflicts between local and Docker environments
+   - The Docker build will install dependencies directly from composer.json
 
-2. **Database Issues**: The SQLite database will be created automatically during deployment
+2. **CORS Errors**: Make sure the frontend URL is added to the CORS allowed origins in `backend/config/cors.php`
 
-3. **Environment Variables**: Ensure all required environment variables are set in Render dashboard
+3. **Database Issues**: The SQLite database will be created automatically during deployment
 
-4. **Build Failures**: Check the build logs in Render dashboard for specific error messages
+4. **Environment Variables**: Ensure all required environment variables are set in Render dashboard
+
+5. **Build Failures**: Check the build logs in Render dashboard for specific error messages
+
+6. **PHP Version Conflicts**: The Dockerfile uses PHP 8.2 and ignores platform requirements to avoid conflicts
 
 ### Manual Deployment
 
@@ -94,7 +102,7 @@ If automatic deployment fails:
 1. Deploy backend first:
    - Create a new Web Service
    - Select Docker environment
-   - Use the Dockerfile in the backend directory
+   - Use the Dockerfile.simple in the backend directory
    - Set environment variables manually
 
 2. Deploy frontend:
@@ -104,6 +112,7 @@ If automatic deployment fails:
 
 ## API Endpoints
 
+- `GET /api/health` - Health check endpoint
 - `POST /api/greet` - Greeting endpoint (example)
 
 ## Support

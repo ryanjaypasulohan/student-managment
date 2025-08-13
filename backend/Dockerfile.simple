@@ -26,19 +26,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy composer files first for better caching
-COPY composer.json ./
-COPY composer.lock* ./
-
-# Install dependencies (ignore platform requirements to avoid PHP version conflicts)
-RUN if [ -f composer.lock ]; then \
-        composer install --optimize-autoloader --no-dev --no-scripts --ignore-platform-reqs; \
-    else \
-        composer install --optimize-autoloader --no-dev --no-scripts --no-lock --ignore-platform-reqs; \
-    fi
-
-# Copy application files
+# Copy all application files
 COPY . .
+
+# Install dependencies without lock file to avoid platform conflicts
+RUN composer install --optimize-autoloader --no-dev --no-scripts --ignore-platform-reqs
 
 # Create database directory and file
 RUN mkdir -p /var/www/html/database
