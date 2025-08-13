@@ -19,18 +19,23 @@ function App() {
     try {
       const response = await fetch(`${API_URL}/api/greet`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify({ name })
       })
 
       if (!response.ok) {
-        throw new Error(`Request failed: ${response.status}`)
+        const errorText = await response.text()
+        throw new Error(`Request failed: ${response.status} - ${errorText}`)
       }
 
       const data = await response.json()
       setGreeting(data.greeting || '')
     } catch (error) {
-      setErrorMessage(error.message)
+      console.error('API Error:', error)
+      setErrorMessage(error.message || 'Failed to connect to API')
     } finally {
       setIsLoading(false)
     }
@@ -66,9 +71,10 @@ function App() {
         </p>
       )}
 
-      <p style={{ marginTop: 24, color: '#666' }}>
-        API URL: {API_URL}
-      </p>
+      <div style={{ marginTop: 24, color: '#666', fontSize: '14px' }}>
+        <p><strong>API URL:</strong> {API_URL}</p>
+        <p><strong>Status:</strong> {isLoading ? 'Connecting...' : 'Ready'}</p>
+      </div>
     </div>
   )
 }

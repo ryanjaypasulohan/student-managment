@@ -7,9 +7,13 @@ return [
         'http://localhost:5173',
         'http://localhost:3000',
         'https://react-frontend.onrender.com',
-        'https://*.onrender.com'
+        'https://*.onrender.com',
+        'https://*.render.com'
     ],
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        'https://*.onrender.com',
+        'https://*.render.com'
+    ],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,

@@ -37,6 +37,8 @@ The deployment will automatically set up the following environment variables:
 - `APP_URL=https://laravel-backend.onrender.com`
 - `DB_CONNECTION=sqlite`
 - `DB_DATABASE=/var/www/html/database/database.sqlite`
+- `SESSION_LIFETIME=120`
+- `SESSION_ENCRYPT=false`
 
 **Frontend (React):**
 - `VITE_API_URL=https://laravel-backend.onrender.com`
@@ -81,19 +83,30 @@ npm run dev
 ### Common Issues
 
 1. **Composer.lock Error**: If you get "composer.lock: not found" error:
-   - The project uses `Dockerfile.simple` which doesn't rely on composer.lock
+   - The project uses `Dockerfile.minimal` which doesn't rely on composer.lock
    - This avoids PHP version conflicts between local and Docker environments
    - The Docker build will install dependencies directly from composer.json
 
-2. **CORS Errors**: Make sure the frontend URL is added to the CORS allowed origins in `backend/config/cors.php`
+2. **CORS Errors**: 
+   - CORS is configured to allow all Render domains
+   - Check that your frontend URL is in the allowed origins
+   - The backend allows `https://*.onrender.com` and `https://*.render.com`
 
-3. **Database Issues**: The SQLite database will be created automatically during deployment
+3. **Database Issues**: 
+   - SQLite database will be created automatically during deployment
+   - Database file is located at `/var/www/html/database/database.sqlite`
+   - Permissions are set correctly for the database directory
 
-4. **Environment Variables**: Ensure all required environment variables are set in Render dashboard
+4. **Apache Configuration**:
+   - Apache is configured to serve Laravel from the `public` directory
+   - URL rewriting is enabled for Laravel routes
+   - .htaccess file is properly configured
 
-5. **Build Failures**: Check the build logs in Render dashboard for specific error messages
+5. **Environment Variables**: Ensure all required environment variables are set in Render dashboard
 
-6. **PHP Version Conflicts**: The Dockerfile uses PHP 8.2 and ignores platform requirements to avoid conflicts
+6. **Build Failures**: Check the build logs in Render dashboard for specific error messages
+
+7. **PHP Version Conflicts**: The Dockerfile uses PHP 8.2 and ignores platform requirements to avoid conflicts
 
 ### Manual Deployment
 
@@ -102,7 +115,7 @@ If automatic deployment fails:
 1. Deploy backend first:
    - Create a new Web Service
    - Select Docker environment
-   - Use the Dockerfile.simple in the backend directory
+   - Use the Dockerfile.minimal in the backend directory
    - Set environment variables manually
 
 2. Deploy frontend:
@@ -112,8 +125,15 @@ If automatic deployment fails:
 
 ## API Endpoints
 
-- `GET /api/health` - Health check endpoint
+- `GET /api/health` - Health check endpoint with detailed status
+- `GET /api/status` - Simple status endpoint
 - `POST /api/greet` - Greeting endpoint (example)
+
+## Testing the Deployment
+
+1. **Test Backend Health**: Visit `https://your-backend-url.onrender.com/api/health`
+2. **Test API Endpoint**: Use the frontend to send a greeting request
+3. **Check Logs**: Monitor the Render dashboard for any errors
 
 ## Support
 

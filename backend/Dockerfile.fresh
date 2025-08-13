@@ -1,8 +1,5 @@
 FROM php:8.2-apache
 
-# Add cache busting
-ARG CACHEBUST=1
-
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
@@ -29,20 +26,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# List files to debug
-RUN ls -la
-
-# Copy composer files first with explicit error checking
-COPY composer.json ./
-RUN ls -la composer.json || echo "composer.json not found after copy"
-
-# Copy the rest of the application files
+# Copy everything at once to avoid cache issues
 COPY . .
 
-# List files again to verify
-RUN ls -la
+# Verify files are present
+RUN echo "=== Checking files ===" && \
+    ls -la && \
+    echo "=== composer.json content ===" && \
+    cat composer.json
 
-# Install dependencies without lock file to avoid platform conflicts
+# Install dependencies
 RUN composer install --optimize-autoloader --no-dev --no-scripts --ignore-platform-reqs
 
 # Create database directory and file

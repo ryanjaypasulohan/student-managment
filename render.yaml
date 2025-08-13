@@ -4,7 +4,7 @@ services:
     name: laravel-backend
     env: docker
     plan: free
-    dockerfilePath: ./backend/Dockerfile.simple
+    dockerfilePath: ./backend/Dockerfile.minimal
     dockerContext: ./backend
     envVars:
       - key: APP_ENV
@@ -29,6 +29,12 @@ services:
         value: stack
       - key: LOG_LEVEL
         value: error
+      - key: SESSION_LIFETIME
+        value: 120
+      - key: SESSION_ENCRYPT
+        value: false
+      - key: SESSION_PATH
+        value: /
 
   # Frontend React App
   - type: web
