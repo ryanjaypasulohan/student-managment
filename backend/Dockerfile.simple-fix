@@ -17,23 +17,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy all files
-COPY . .
+# Copy composer files first
+COPY composer.json composer.lock ./
 
-# Debug: List files to see what was copied
-RUN ls -la
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
+
+# Copy the rest of the application files
+COPY . .
 
 # Create .env file from example
 RUN if [ -f .env.example ]; then cp .env.example .env; fi
-
-# Install PHP dependencies with better error handling
-RUN if [ -f composer.json ]; then \
-        composer install --no-dev --optimize-autoloader --ignore-platform-reqs; \
-    else \
-        echo "composer.json not found. Listing directory contents:"; \
-        ls -la; \
-        exit 1; \
-    fi
 
 # Create database directory and file
 RUN mkdir -p /var/www/html/database
