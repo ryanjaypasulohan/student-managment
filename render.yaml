@@ -4,7 +4,7 @@ services:
     name: laravel-backend
     env: docker
     plan: free
-    dockerfilePath: ./backend/Dockerfile.simple-fix
+    dockerfilePath: ./backend/Dockerfile.final
     dockerContext: ./backend
     envVars:
       - key: APP_ENV
