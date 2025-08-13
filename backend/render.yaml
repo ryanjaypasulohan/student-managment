@@ -1,18 +1,2 @@
-services:
-  - type: web
-    name: laravel-backend
-    env: docker
-    plan: free
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: false
-      - key: CACHE_DRIVER
-        value: file
-      - key: SESSION_DRIVER
-        value: file
-      - key: QUEUE_CONNECTION
-        value: sync
+# This file is no longer needed as the main render.yaml in the root directory
+# handles both frontend and backend deployment configuration.

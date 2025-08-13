@@ -8,13 +8,14 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     zip \
-    unzip
+    unzip \
+    sqlite3
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -34,14 +35,29 @@ RUN composer install --optimize-autoloader --no-dev --no-scripts
 # Copy application files
 COPY . .
 
+# Create database directory and file
+RUN mkdir -p /var/www/html/database
+RUN touch /var/www/html/database/database.sqlite
+
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+
+# Create .env file from example if it doesn't exist
+RUN if [ ! -f .env ]; then cp .env.example .env; fi
+
+# Generate application key
+RUN php artisan key:generate --force
+
+# Run migrations
+RUN php artisan migrate --force
 
 # Clear and cache config
 RUN php artisan config:clear
 RUN php artisan route:clear
 RUN php artisan view:clear
+RUN php artisan config:cache
+RUN php artisan route:cache
 
 # Expose port 80
 EXPOSE 80

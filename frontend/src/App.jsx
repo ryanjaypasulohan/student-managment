@@ -7,6 +7,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
+  // Get API URL from environment variable or fallback to localhost for development
+  const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000'
+
   async function handleSubmit(event) {
     event.preventDefault()
     setIsLoading(true)
@@ -14,7 +17,7 @@ function App() {
     setGreeting('')
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/greet', {
+      const response = await fetch(`${API_URL}/api/greet`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name })
@@ -64,7 +67,7 @@ function App() {
       )}
 
       <p style={{ marginTop: 24, color: '#666' }}>
-        Make sure your Laravel server is running at http://127.0.0.1:8000.
+        API URL: {API_URL}
       </p>
     </div>
   )
